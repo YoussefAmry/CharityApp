@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: html}">
+<head>
+    <title th:fragment="title">Accueil - Charity App</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <!-- Hero Section -->
+        <div class="bg-primary text-white py-5 mb-5">
+            <div class="container">
+                <h1 class="display-4">Bienvenue sur Charity App</h1>
+                <p class="lead">Ensemble, nous pouvons faire la différence. Découvrez les actions caritatives et participez au changement.</p>
+                <a th:href="@{/actions}" class="btn btn-light btn-lg">Découvrir les actions</a>
+            </div>
+        </div>
+
+        <!-- Featured Actions -->
+        <section class="mb-5">
+            <h2 class="mb-4">Actions en vedette</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4" th:each="action : ${actionsEnVedette}">
+                    <div class="card h-100">
+                        <img th:if="${action.imageUrl}" th:src="${action.imageUrl}" class="card-img-top" alt="Action image">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${action.titre}">Titre de l'action</h5>
+                            <p class="card-text" th:text="${#strings.abbreviate(action.description, 150)}">Description</p>
+                            <div class="progress mb-3">
+                                <div class="progress-bar" role="progressbar" 
+                                     th:style="'width: ' + ${(action.sommeActuelle / action.objectifCollecte) * 100} + '%'"
+                                     th:text="${#numbers.formatDecimal((action.sommeActuelle / action.objectifCollecte) * 100, 0, 0)} + '%'">
+                                </div>
+                            </div>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    Objectif: <span th:text="${#numbers.formatDecimal(action.objectifCollecte, 0, 'COMMA', 2, 'POINT')}">0</span> €
+                                </small>
+                            </p>
+                            <a th:href="@{'/actions/' + ${action.id}}" class="btn btn-primary">En savoir plus</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Organizations Section -->
+        <section class="mb-5">
+            <h2 class="mb-4">Organisations partenaires</h2>
+            <div class="row">
+                <div class="col-md-3 mb-4" th:each="org : ${organisations}">
+                    <div class="card h-100">
+                        <img th:if="${org.logo}" th:src="${org.logo}" class="card-img-top p-3" alt="Logo organisation">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${org.nom}">Nom de l'organisation</h5>
+                            <p class="card-text" th:text="${#strings.abbreviate(org.description, 100)}">Description</p>
+                            <a th:href="@{'/organisations/' + ${org.id}}" class="btn btn-outline-primary">Voir le profil</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section class="text-center py-5 bg-light">
+            <h2>Prêt à faire la différence ?</h2>
+            <p class="lead">Rejoignez notre communauté et commencez à contribuer aux causes qui vous tiennent à cœur.</p>
+            <a th:href="@{/register}" class="btn btn-primary btn-lg">Rejoindre maintenant</a>
+        </section>
+    </div>
+</body>
+</html> 

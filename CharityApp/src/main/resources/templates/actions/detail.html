@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: html}">
+<head>
+    <title th:fragment="title" th:text="${action.titre + ' - Charity App'}">Détail de l'action - Charity App</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <!-- Action Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 th:text="${action.titre}">Titre de l'action</h1>
+                <p class="text-muted">
+                    <i class="bi bi-building me-2"></i>
+                    <a th:href="@{'/organisations/' + ${action.organisationId}}" th:text="${action.organisationNom}">Organisation</a>
+                    <span class="mx-2">|</span>
+                    <i class="bi bi-geo-alt me-2"></i>
+                    <span th:text="${action.lieu}">Lieu</span>
+                    <span class="mx-2">|</span>
+                    <i class="bi bi-calendar me-2"></i>
+                    <span th:text="${#dates.format(action.date, 'dd/MM/yyyy')}">Date</span>
+                </p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a th:href="@{/dons/creer(actionId=${action.id})}" class="btn btn-primary btn-lg">Faire un don</a>
+            </div>
+        </div>
+
+        <!-- Action Content -->
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <img th:if="${action.imageUrl}" th:src="${action.imageUrl}" class="card-img-top" alt="Image de l'action">
+                    <div class="card-body">
+                        <h5 class="card-title">Description</h5>
+                        <p class="card-text" th:text="${action.description}">Description détaillée de l'action</p>
+                    </div>
+                </div>
+
+                <!-- Recent Donations -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Derniers dons</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(dons)}" class="text-center py-4">
+                            <p>Aucun don n'a encore été fait pour cette action.</p>
+                            <a th:href="@{/dons/creer(actionId=${action.id})}" class="btn btn-primary">Soyez le premier à donner</a>
+                        </div>
+                        <div th:each="don : ${dons}" class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <strong th:text="${don.anonymous ? 'Anonyme' : don.utilisateurNom}">Donateur</strong>
+                                <small class="text-muted" th:text="${#dates.format(don.date, 'dd/MM/yyyy HH:mm')}">Date</small>
+                            </div>
+                            <span class="badge bg-success" th:text="${#numbers.formatDecimal(don.montant, 0, 'COMMA', 2, 'POINT') + ' €'}">Montant</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-md-4">
+                <!-- Progress Card -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Progression de la collecte</h5>
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar" 
+                                 th:style="'width: ' + ${(action.sommeActuelle / action.objectifCollecte) * 100} + '%'"
+                                 th:text="${#numbers.formatDecimal((action.sommeActuelle / action.objectifCollecte) * 100, 0, 0)} + '%'">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6>Collecté</h6>
+                                <p class="h4" th:text="${#numbers.formatDecimal(action.sommeActuelle, 0, 'COMMA', 2, 'POINT') + ' €'}">0 €</p>
+                            </div>
+                            <div class="text-end">
+                                <h6>Objectif</h6>
+                                <p class="h4" th:text="${#numbers.formatDecimal(action.objectifCollecte, 0, 'COMMA', 2, 'POINT') + ' €'}">0 €</p>
+                            </div>
+                        </div>
+                        <a th:href="@{/dons/creer(actionId=${action.id})}" class="btn btn-primary w-100 mt-3">Faire un don</a>
+                    </div>
+                </div>
+
+                <!-- Organisation Card -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">À propos de l'organisation</h5>
+                        <img th:if="${organisation.logo}" th:src="${organisation.logo}" class="img-fluid mb-3" alt="Logo organisation">
+                        <h6 th:text="${organisation.nom}">Nom de l'organisation</h6>
+                        <p class="card-text" th:text="${organisation.description}">Description de l'organisation</p>
+                        <a th:href="@{'/organisations/' + ${organisation.id}}" class="btn btn-outline-primary w-100">Voir le profil</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: html}">
+<head>
+    <title th:fragment="title">Actions caritatives - Charity App</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <!-- Search and Filter Section -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <form th:action="@{/actions}" method="get" class="d-flex">
+                    <input type="text" name="search" class="form-control me-2" placeholder="Rechercher une action..."
+                           th:value="${param.search}">
+                    <button type="submit" class="btn btn-primary">Rechercher</button>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <select class="form-select" id="filterOrganisation" name="organisation">
+                    <option value="">Toutes les organisations</option>
+                    <option th:each="org : ${organisations}" 
+                            th:value="${org.id}" 
+                            th:text="${org.nom}"
+                            th:selected="${param.organisation == org.id}">
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Actions Grid -->
+        <div class="row">
+            <div class="col-md-4 mb-4" th:each="action : ${actions}">
+                <div class="card h-100">
+                    <img th:if="${action.imageUrl}" th:src="${action.imageUrl}" class="card-img-top" alt="Action image">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${action.titre}">Titre de l'action</h5>
+                        <p class="card-text" th:text="${#strings.abbreviate(action.description, 150)}">Description</p>
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar" 
+                                 th:style="'width: ' + ${(action.sommeActuelle / action.objectifCollecte) * 100} + '%'"
+                                 th:text="${#numbers.formatDecimal((action.sommeActuelle / action.objectifCollecte) * 100, 0, 0)} + '%'">
+                            </div>
+                        </div>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Collecté: <span th:text="${#numbers.formatDecimal(action.sommeActuelle, 0, 'COMMA', 2, 'POINT')}">0</span> € 
+                                sur <span th:text="${#numbers.formatDecimal(action.objectifCollecte, 0, 'COMMA', 2, 'POINT')}">0</span> €
+                            </small>
+                        </p>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                <i class="bi bi-building"></i> 
+                                <span th:text="${action.organisationNom}">Organisation</span>
+                            </small>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a th:href="@{'/actions/' + ${action.id}}" class="btn btn-primary">En savoir plus</a>
+                            <small class="text-muted" th:text="${#dates.format(action.date, 'dd/MM/yyyy')}">Date</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav th:if="${actions.totalPages > 1}" aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${actions.first ? 'disabled' : ''}">
+                    <a class="page-link" th:href="@{/actions(page=${actions.number - 1}, size=${actions.size})}">Précédent</a>
+                </li>
+                <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, actions.totalPages - 1)}"
+                    th:classappend="${pageNumber == actions.number ? 'active' : ''}">
+                    <a class="page-link" th:href="@{/actions(page=${pageNumber}, size=${actions.size})}"
+                       th:text="${pageNumber + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${actions.last ? 'disabled' : ''}">
+                    <a class="page-link" th:href="@{/actions(page=${actions.number + 1}, size=${actions.size})}">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Scripts Fragment -->
+    <th:block th:fragment="scripts">
+        <script>
+            document.getElementById('filterOrganisation').addEventListener('change', function() {
+                window.location.href = '/actions?organisation=' + this.value;
+            });
+        </script>
+    </th:block>
+</body>
+</html> 
