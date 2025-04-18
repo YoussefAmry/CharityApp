@@ -9,7 +9,6 @@ CharityApp is a web-based platform developed using **Spring Boot** and **Java 17
 - 👤 User Registration & Authentication
 - 🏢 Organization Management
 - 🎁 Donation Tracking
-- 📊 Admin Dashboard (coming soon)
 - 📬 Contact & Feedback form
 - 🖼️ Clean and responsive UI (Thymeleaf-based)
 
